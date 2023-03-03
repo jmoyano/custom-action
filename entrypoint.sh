@@ -6,10 +6,12 @@ set -e
 if [ -n "$GITHUB_EVENT_PATH" ];
 then
     EVENT_PATH=$GITHUB_EVENT_PATH
+    echo "It is a valid GitHub Event"
 elif [ -f ./dummy_push.json ];
 then
     EVENT_PATH="./dummy_push.json"
     LOCAL_TEST=true
+    echo "It is a local test"
 else 
     echo "No event JSON data"
     exit 1
@@ -28,6 +30,8 @@ then
     # Recover version tag
     VERSION=$(echo $RELEASE_TAG | grep -ioe "v.*")
 
+    echo "Tag will be $VERSION"
+
     DATA="$(printf '{"tag_name":"%s",' $VERSION)"
     DATA="${DATA} $(printf '"target_commitish":"master",')"
     DATA="${DATA} $(printf '"name":"%s",' $VERSION)"
@@ -41,6 +45,7 @@ then
         echo "[TEST] Version tag found, but running in local mode"
         echo $DATA
     else
+        echo "Creating release $VERSION"
         echo $DATA | http POST $URL | jq .
     fi
 # otherwise
