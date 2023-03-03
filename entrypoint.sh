@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+echo "Start release creation"
 
 # Check if this is a GitHub environment checking if the variable
 # $GITHUB_EVENT_PATH exists
@@ -54,3 +55,4 @@ else
     echo "Nothing to process."
 fi
 
+echo "Release creation finished"
