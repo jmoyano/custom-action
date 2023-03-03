@@ -38,7 +38,7 @@ then
     DATA="${DATA} $(printf '"body":"Automated release based on keyword: %s",' "$*")"
     DATA="${DATA} $(printf '"draft":false, "prerelease":false}')"
 
-    URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases?access_token=${GITHUB_TOKEN}"
+    URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
     if [[ "${LOCAL_TEST}" == *"true"* ]];
     then
@@ -46,7 +46,7 @@ then
         echo $DATA
     else
         echo "Creating release $VERSION"
-        echo $DATA | http POST $URL | jq .
+        echo $DATA | http -headers 'Authorization: token ${GITHUB_TOKEN}' POST $URL | jq .
     fi
 # otherwise
 else
