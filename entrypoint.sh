@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 echo "Start release creation"
 
 # Check if this is a GitHub environment checking if the variable
@@ -24,9 +23,9 @@ RELEASE_TAG=$(bash -c \
     "jq '.commits[].message, .head_commit.message' < $EVENT_PATH \
     | grep -ioe 'RELEASE v[a-zA-Z0-9.]*'")
 
-# echo $RELEASE_TAG
+echo "Release tag: $RELEASE_TAG"
 
-if [ $? -eq 0 ];
+if [[ $RELEASE_TAG != "" ]];
 then
     # Recover version tag
     VERSION=$(echo $RELEASE_TAG | grep -ioe "v.*")
@@ -52,7 +51,7 @@ then
 # otherwise
 else
     # exit gracefully
-    echo "Nothing to process."
+    echo "No release tag found"
 fi
 
 echo "Release creation finished"
