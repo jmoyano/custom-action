@@ -1,0 +1,8 @@
+name: 'EATI releaser'
+description: 'Creates releases automagically'
+runs:
+   using: 'docker'
+   image: 'Dockerfile'
+branding:
+   icon: 'bookmark'
+   color: 'purple'
