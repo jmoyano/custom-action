@@ -12,7 +12,7 @@ None
 
 # Examples
 
-```
+```yaml
 name: custom-action
 
 on: 
