@@ -21,22 +21,23 @@ fi
 
 RELEASE_TAG=$(bash -c \
     "jq '.commits[].message, .head_commit.message' < $EVENT_PATH \
-    | grep -ioe 'RELEASE v[a-zA-Z0-9.]*'")
+    | grep -m 1 -i -o -e 'RELEASE v[a-zA-Z0-9.]*'")
 
 echo "Release tag: $RELEASE_TAG"
 
+# If release tag found
 if [[ $RELEASE_TAG != "" ]];
 then
     # Recover version tag
-    VERSION=$(echo $RELEASE_TAG | grep -ioe "v.*")
+    VERSION=$(echo $RELEASE_TAG | grep -ioe "v[a-zA-Z0-9.]*")
 
     echo "Tag will be $VERSION"
 
     DATA="$(printf '{"tag_name":"%s",' $VERSION)"
-    DATA="${DATA} $(printf '"target_commitish":"master",')"
+    DATA="${DATA} $(printf '"target_commitish":"main",')"
     DATA="${DATA} $(printf '"name":"%s",' $VERSION)"
-    DATA="${DATA} $(printf '"body":"Automated release based on keyword: %s",' "$*")"
-    DATA="${DATA} $(printf '"draft":false, "prerelease":false}')"
+    DATA="${DATA} $(printf '"body":"Automated release based on keyword: %s",' "$VERSION")"
+    DATA="${DATA} $(printf '"draft":false, "prerelease":false, "generate_release_notes":false}')"
 
     URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
@@ -46,12 +47,15 @@ then
         echo $DATA
     else
         echo "Creating release $VERSION"
-        echo $DATA | http -headers 'Authorization: token ${GITHUB_TOKEN}' POST $URL | jq .
+        echo "Using JSON data:"
+        echo $DATA
+        echo $DATA | http -v POST $URL "Authorization: token $GITHUB_TOKEN"
     fi
-# otherwise
+# otherwise, do nothing
 else
     # exit gracefully
     echo "No release tag found"
 fi
 
+echo ""
 echo "Release creation finished"
